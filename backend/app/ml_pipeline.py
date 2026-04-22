@@ -5,10 +5,11 @@ from sklearn.model_selection import train_test_split, cross_val_score, learning_
 from sklearn.linear_model import LogisticRegression, LinearRegression, Ridge
 from sklearn.ensemble import RandomForestClassifier, RandomForestRegressor, GradientBoostingRegressor, GradientBoostingClassifier
 from sklearn.neural_network import MLPClassifier, MLPRegressor
-from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, mean_squared_error, r2_score
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score, mean_squared_error, r2_score, confusion_matrix, roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import LabelEncoder, StandardScaler
 from scipy import stats
 from .fit_detector import detect_fit_status
+from .model_evaluation import calculate_classification_metrics
 
 # Suppress convergence warnings so they don't crash training
 warnings.filterwarnings('ignore', category=UserWarning)
@@ -30,8 +31,8 @@ def get_adaptive_cv(n_samples, y=None, problem_type="classification"):
     else:
         max_folds = n_samples
     
-    # Use at most 5 folds, at least 2
-    cv = min(5, max_folds)
+    # FAST: Use at most 3 folds instead of 5, minimum 2
+    cv = min(3, max_folds)  # CHANGED: 5 → 3
     cv = max(2, cv)
     return cv
 
@@ -103,7 +104,7 @@ def detect_outliers_iqr(X, threshold=1.5):
 
 
 def calculate_learning_curves(model, X, y, problem_type, cv=None):
-    """Generate learning curve data (train size vs score)"""
+    """Generate learning curve data (train size vs score) - OPTIMIZED VERSION"""
     try:
         if cv is None:
             cv = get_adaptive_cv(len(y), y, problem_type)
@@ -113,14 +114,21 @@ def calculate_learning_curves(model, X, y, problem_type, cv=None):
         else:
             scoring = 'r2'
         
-        # Reduce number of points for small datasets
-        n_points = min(5, max(2, len(y) // (cv + 1)))
+        # For fast performance: use only 2-3 points instead of 5-10
+        n_samples = len(y)
+        if n_samples < 50:
+            n_points = 2  # FAST: Only 2 points for small datasets
+        elif n_samples < 200:
+            n_points = 3  # FAST: Only 3 points for medium datasets
+        else:
+            n_points = 4  # FAST: Only 4 points for larger datasets
         
         train_sizes, train_scores, val_scores = learning_curve(
-            model, X, y, cv=cv, 
-            train_sizes=np.linspace(0.2, 1.0, n_points),
+            model, X, y, cv=min(2, cv),  # FAST: Use max 2 folds instead of adaptive
+            train_sizes=np.linspace(0.3, 1.0, n_points),  # FAST: Start at 0.3 instead of 0.2
             scoring=scoring,
-            n_jobs=1
+            n_jobs=1,
+            shuffle=False  # FAST: Disable shuffle
         )
         
         train_mean = np.mean(train_scores, axis=1)
@@ -368,43 +376,51 @@ def run_pipeline(df):
             if n_samples < 20:
                 nn_hidden = (16,)
                 nn_early_stop = False
+                n_estimators = 50  # FAST: Reduced from 100
             elif n_samples < 100:
                 nn_hidden = (32,)
                 nn_early_stop = False
+                n_estimators = 75  # FAST: Reduced from 100
             else:
                 nn_hidden = (64, 32)
                 nn_early_stop = True
+                n_estimators = 100
             
             models = {
                 "Logistic Regression": LogisticRegression(
-                    max_iter=2000, solver='lbfgs', random_state=42, class_weight='balanced'
+                    max_iter=1000, solver='lbfgs', random_state=42, class_weight='balanced'  # FAST: max_iter 1000 instead of 2000
                 ),
                 "Random Forest": RandomForestClassifier(
-                    n_estimators=100, max_depth=15, random_state=42, n_jobs=1, class_weight='balanced'
+                    n_estimators=n_estimators, max_depth=10, random_state=42, n_jobs=1, class_weight='balanced'  # FAST: max_depth 10 instead of 15
                 ),
                 "Gradient Boosting": GradientBoostingClassifier(
-                    n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42
+                    n_estimators=50, learning_rate=0.1, max_depth=4, random_state=42  # FAST: n_est 50, depth 4
                 ),
                 "Neural Network": MLPClassifier(
-                    hidden_layer_sizes=nn_hidden, max_iter=1000, random_state=42,
+                    hidden_layer_sizes=nn_hidden, max_iter=500, random_state=42,  # FAST: max_iter 500 instead of 1000
                     early_stopping=nn_early_stop, learning_rate_init=0.01,
-                    learning_rate='adaptive', solver='adam', tol=1e-4
+                    learning_rate='adaptive', solver='adam', tol=1e-3  # FAST: tol 1e-3 for faster convergence
                 )
             }
             scoring_metric = 'accuracy'
         else:
+            if n_samples < 100:
+                n_estimators = 50
+            else:
+                n_estimators = 100
+            
             models = {
                 "Linear Regression": LinearRegression(),
                 "Ridge Regression": Ridge(alpha=1.0),
                 "Random Forest": RandomForestRegressor(
-                    n_estimators=100, max_depth=15, random_state=42, n_jobs=1
+                    n_estimators=n_estimators, max_depth=10, random_state=42, n_jobs=1  # FAST: max_depth 10 instead of 15
                 ),
                 "Gradient Boosting": GradientBoostingRegressor(
-                    n_estimators=100, learning_rate=0.1, max_depth=5, random_state=42
+                    n_estimators=50, learning_rate=0.1, max_depth=4, random_state=42  # FAST: n_est 50, depth 4
                 ),
                 "Neural Network": MLPRegressor(
-                    hidden_layer_sizes=(64, 32), max_iter=1000, random_state=42,
-                    early_stopping=True, learning_rate_init=0.01, learning_rate='adaptive', solver='adam'
+                    hidden_layer_sizes=(64, 32), max_iter=500, random_state=42,  # FAST: max_iter 500 instead of 1000
+                    early_stopping=True, learning_rate_init=0.01, learning_rate='adaptive', solver='adam'  # FAST: faster
                 )
             }
             scoring_metric = 'r2'
@@ -456,8 +472,9 @@ def run_pipeline(df):
                 print(f"  📈 Train Score: {train_score:.4f} ({train_score*100:.2f}%)")
                 print(f"  📊 Validation Score: {val_score:.4f} ({val_score*100:.2f}%)")
                 
-                # Cross-validation with adaptive folds
+                # Cross-validation with adaptive folds - OPTIMIZED
                 adaptive_cv = get_adaptive_cv(len(y_train), y_train, problem_type)
+                adaptive_cv = min(2, adaptive_cv)  # FAST: Use max 2 folds for speed
                 print(f"  📋 Using {adaptive_cv}-fold cross-validation")
                 cv_scores = cross_val_score(model, X_train_clean, y_train, cv=adaptive_cv, scoring=scoring_metric, n_jobs=1)
                 cv_info = calculate_cv_confidence_intervals(cv_scores)
@@ -474,6 +491,99 @@ def run_pipeline(df):
                 # Learning curves (adaptive CV)
                 learning_curves = calculate_learning_curves(model, X_train_clean, y_train, problem_type, cv=adaptive_cv)
                 
+                # ============================================================
+                # DETAILED CLASSIFICATION METRICS (NEW - Following Guide)
+                # ============================================================
+                detailed_metrics = {}
+                if problem_type == "classification":
+                    try:
+                        # Step 1: Get predictions
+                        y_pred = model.predict(X_val)
+                        
+                        # Step 2: Try to get predicted probabilities
+                        y_pred_proba = None
+                        if hasattr(model, 'predict_proba'):
+                            y_pred_proba = model.predict_proba(X_val)
+                        elif hasattr(model, 'decision_function'):
+                            # For models without predict_proba, use decision function
+                            decision = model.decision_function(X_val)
+                            # Convert decision scores to probabilities
+                            y_pred_proba = np.column_stack([
+                                1 / (1 + np.exp(decision)),
+                                1 / (1 + np.exp(-decision))
+                            ])
+                        
+                        # Step 3: Calculate metrics using the guide's formulas
+                        print(f"  📋 Calculating detailed classification metrics...")
+                        
+                        # Confusion Matrix
+                        cm = confusion_matrix(y_val, y_pred)
+                        TP = cm[1, 1] if cm.shape == (2, 2) else np.sum([cm[i, i] for i in range(cm.shape[0])])
+                        TN = cm[0, 0] if cm.shape == (2, 2) else 0
+                        FP = cm[0, 1] if cm.shape == (2, 2) else np.sum(cm) - np.trace(cm)
+                        FN = cm[1, 0] if cm.shape == (2, 2) else 0
+                        
+                        # Accuracy = (TP + TN) / Total
+                        accuracy = accuracy_score(y_val, y_pred)
+                        
+                        # Precision = TP / (TP + FP)
+                        precision = precision_score(y_val, y_pred, average='binary' if len(np.unique(y_val)) == 2 else 'weighted', zero_division=0)
+                        
+                        # Recall = TP / (TP + FN)
+                        recall = recall_score(y_val, y_pred, average='binary' if len(np.unique(y_val)) == 2 else 'weighted', zero_division=0)
+                        
+                        # F1 = 2 × (Precision × Recall) / (Precision + Recall)
+                        f1 = f1_score(y_val, y_pred, average='binary' if len(np.unique(y_val)) == 2 else 'weighted', zero_division=0)
+                        
+                        # ROC-AUC (only for binary classification with probabilities)
+                        roc_auc = None
+                        roc_data = None
+                        if len(np.unique(y_val)) == 2 and y_pred_proba is not None:
+                            try:
+                                # ROC-AUC uses probabilities, not predicted class
+                                if y_pred_proba.shape[1] == 2:
+                                    proba_positive = y_pred_proba[:, 1]
+                                else:
+                                    proba_positive = y_pred_proba[:, 0]
+                                
+                                roc_auc = roc_auc_score(y_val, proba_positive)
+                                fpr, tpr, thresholds = roc_curve(y_val, proba_positive)
+                                
+                                roc_data = {
+                                    'fpr': fpr.tolist(),
+                                    'tpr': tpr.tolist(),
+                                    'auc': float(roc_auc)
+                                }
+                                print(f"    ✓ Accuracy:  {accuracy:.4f} ({accuracy*100:.2f}%)")
+                                print(f"    ✓ Precision: {precision:.4f}")
+                                print(f"    ✓ Recall:    {recall:.4f}")
+                                print(f"    ✓ F1 Score:  {f1:.4f}")
+                                print(f"    ✓ ROC-AUC:   {roc_auc:.4f}")
+                            except Exception as e:
+                                print(f"    ⚠ ROC-AUC calculation failed: {str(e)}")
+                        else:
+                            print(f"    ✓ Accuracy:  {accuracy:.4f} ({accuracy*100:.2f}%)")
+                            print(f"    ✓ Precision: {precision:.4f}")
+                            print(f"    ✓ Recall:    {recall:.4f}")
+                            print(f"    ✓ F1 Score:  {f1:.4f}")
+                        
+                        detailed_metrics = {
+                            'accuracy': safe_float(accuracy),
+                            'precision': safe_float(precision),
+                            'recall': safe_float(recall),
+                            'f1_score': safe_float(f1),
+                            'roc_auc': safe_float(roc_auc) if roc_auc else None,
+                            'confusion_matrix': cm.tolist(),
+                            'roc_curve': roc_data,
+                            'tp': int(TP) if isinstance(TP, (int, np.integer)) else int(np.sum(TP.flatten() if hasattr(TP, 'flatten') else TP)),
+                            'tn': int(TN) if isinstance(TN, (int, np.integer)) else int(np.sum(TN.flatten() if hasattr(TN, 'flatten') else TN)),
+                            'fp': int(FP) if isinstance(FP, (int, np.integer)) else int(np.sum(FP.flatten() if hasattr(FP, 'flatten') else FP)),
+                            'fn': int(FN) if isinstance(FN, (int, np.integer)) else int(np.sum(FN.flatten() if hasattr(FN, 'flatten') else FN)),
+                        }
+                    except Exception as e:
+                        print(f"    ⚠ Detailed metrics calculation failed: {str(e)}")
+                        detailed_metrics = {}
+                
                 results.append(sanitize_for_json({
                     "model": name,
                     "train_score": safe_float(train_score),
@@ -485,7 +595,8 @@ def run_pipeline(df):
                     "variance": safe_float(bv_info['variance']),
                     "fit_status": fit_status,
                     "learning_curves": learning_curves,
-                    "gap": safe_float(abs(train_score - val_score))
+                    "gap": safe_float(abs(train_score - val_score)),
+                    "detailed_metrics": detailed_metrics
                 }))
                 
                 successful_models += 1

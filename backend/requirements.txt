@@ -7,3 +7,8 @@ scipy
 python-multipart
 openpyxl
 xlrd
+reportlab
+matplotlib
+weasyprint
+Pillow
+jinja2

@@ -96,6 +96,57 @@ export default function FitStatusCard({ model, index }: FitStatusCardProps) {
           </div>
         )}
       </div>
+
+      {/* Detailed Classification Metrics (NEW) */}
+      {model.detailed_metrics && Object.keys(model.detailed_metrics).length > 0 && (
+        <div style={{ marginTop: '1rem', paddingTop: '1rem', borderTop: '1px solid rgba(226, 232, 240, 0.1)' }}>
+          <div className="score-label" style={{ marginBottom: '0.75rem', color: 'var(--accent-cyan)' }}>
+            📊 Classification Metrics
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(100px, 1fr))', gap: '0.5rem' }}>
+            {model.detailed_metrics.accuracy !== undefined && (
+              <div style={{ background: 'rgba(59, 130, 246, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>Accuracy</div>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--accent-cyan)' }}>
+                  {((model.detailed_metrics.accuracy || 0) * 100).toFixed(1)}%
+                </div>
+              </div>
+            )}
+            {model.detailed_metrics.precision !== undefined && (
+              <div style={{ background: 'rgba(34, 197, 94, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>Precision</div>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--accent-green)' }}>
+                  {((model.detailed_metrics.precision || 0) * 100).toFixed(1)}%
+                </div>
+              </div>
+            )}
+            {model.detailed_metrics.recall !== undefined && (
+              <div style={{ background: 'rgba(168, 85, 247, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>Recall</div>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--accent-purple)' }}>
+                  {((model.detailed_metrics.recall || 0) * 100).toFixed(1)}%
+                </div>
+              </div>
+            )}
+            {model.detailed_metrics.f1_score !== undefined && (
+              <div style={{ background: 'rgba(249, 115, 22, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>F1 Score</div>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--accent-amber)' }}>
+                  {((model.detailed_metrics.f1_score || 0) * 100).toFixed(1)}%
+                </div>
+              </div>
+            )}
+            {model.detailed_metrics.roc_auc !== undefined && model.detailed_metrics.roc_auc !== null && (
+              <div style={{ background: 'rgba(245, 158, 11, 0.1)', padding: '0.5rem', borderRadius: '4px' }}>
+                <div style={{ fontSize: '0.75rem', color: 'var(--text-tertiary)' }}>ROC-AUC</div>
+                <div style={{ fontSize: '1rem', fontWeight: 'bold', color: 'var(--accent-yellow)' }}>
+                  {((model.detailed_metrics.roc_auc || 0) * 100).toFixed(1)}%
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }

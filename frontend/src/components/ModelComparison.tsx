@@ -114,6 +114,67 @@ export default function ModelComparison({ models }: ModelComparisonProps) {
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+      {/* Detailed Metrics Comparison Table (NEW) */}
+      {models.some(m => m.detailed_metrics && Object.keys(m.detailed_metrics).length > 0) && (
+        <div style={{ marginTop: '2rem', paddingTop: '2rem', borderTop: '1px solid rgba(226, 232, 240, 0.1)' }}>
+          <div className="section-title" style={{ marginBottom: '1rem' }}>
+            <div className="section-icon cyan">📈</div>
+            <h3>Detailed Metrics Comparison</h3>
+          </div>
+          <div style={{ overflowX: 'auto', background: 'rgba(15, 23, 42, 0.5)', borderRadius: '8px', padding: '1rem' }}>
+            <table style={{
+              width: '100%',
+              borderCollapse: 'collapse',
+              color: 'var(--text-secondary)',
+              fontSize: '0.85rem',
+            }}>
+              <thead>
+                <tr style={{ borderBottom: '1px solid rgba(226, 232, 240, 0.2)' }}>
+                  <th style={{ textAlign: 'left', padding: '0.75rem', fontWeight: '600', color: 'var(--text-primary)' }}>Model</th>
+                  <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600', color: 'var(--accent-cyan)' }}>Accuracy</th>
+                  <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600', color: 'var(--accent-green)' }}>Precision</th>
+                  <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600', color: 'var(--accent-purple)' }}>Recall</th>
+                  <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600', color: 'var(--accent-amber)' }}>F1 Score</th>
+                  <th style={{ textAlign: 'center', padding: '0.75rem', fontWeight: '600', color: 'var(--accent-yellow)' }}>ROC-AUC</th>
+                </tr>
+              </thead>
+              <tbody>
+                {models.map((model, idx) => {
+                  const metrics = model.detailed_metrics || {};
+                  const hasMetrics = Object.keys(metrics).length > 0;
+                  
+                  return (
+                    <tr key={idx} style={{
+                      borderBottom: '1px solid rgba(226, 232, 240, 0.1)',
+                      background: idx % 2 === 0 ? 'transparent' : 'rgba(226, 232, 240, 0.03)',
+                    }}>
+                      <td style={{ padding: '0.75rem', fontWeight: '500', color: 'var(--text-primary)' }}>
+                        {model.model}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem', color: hasMetrics && metrics.accuracy ? 'var(--accent-cyan)' : 'var(--text-tertiary)' }}>
+                        {hasMetrics && metrics.accuracy !== undefined ? `${(metrics.accuracy * 100).toFixed(1)}%` : '—'}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem', color: hasMetrics && metrics.precision ? 'var(--accent-green)' : 'var(--text-tertiary)' }}>
+                        {hasMetrics && metrics.precision !== undefined ? `${(metrics.precision * 100).toFixed(1)}%` : '—'}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem', color: hasMetrics && metrics.recall ? 'var(--accent-purple)' : 'var(--text-tertiary)' }}>
+                        {hasMetrics && metrics.recall !== undefined ? `${(metrics.recall * 100).toFixed(1)}%` : '—'}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem', color: hasMetrics && metrics.f1_score ? 'var(--accent-amber)' : 'var(--text-tertiary)' }}>
+                        {hasMetrics && metrics.f1_score !== undefined ? `${(metrics.f1_score * 100).toFixed(1)}%` : '—'}
+                      </td>
+                      <td style={{ textAlign: 'center', padding: '0.75rem', color: hasMetrics && metrics.roc_auc ? 'var(--accent-yellow)' : 'var(--text-tertiary)' }}>
+                        {hasMetrics && metrics.roc_auc !== undefined && metrics.roc_auc !== null ? `${(metrics.roc_auc * 100).toFixed(1)}%` : '—'}
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

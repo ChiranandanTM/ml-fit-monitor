@@ -1,292 +1,174 @@
-# 🧠 ML Fit Monitor — Model Quality Intelligence Platform
+# 🚀 ML Fit Monitor - Machine Learning Model Quality Decision-Support System
 
-A comprehensive **ML Model Quality Decision-Support System** that **automatically analyzes** machine learning models, detects overfitting/underfitting, and provides **actionable improvement recommendations**. Features a stunning dark-themed React dashboard and a powerful FastAPI backend.
-
----
-
-## 🎯 What This Project Does
-
-**The Problem:** Most people only look at accuracy scores. But a 95% accurate model could be completely useless if:
-- 🔴 It's **overfitted** (memorized training data, poor real-world performance)
-- 🔴 It's **underfitted** (too simple to capture patterns)
-- 🔴 It will **fail in production** when data distribution changes
-
-**The Solution:** ML Fit Monitor **automatically detects** which category your model falls into and **tells you exactly what to do** to fix it.
+**ML Fit Monitor** is an advanced, full-stack Machine Learning Model Quality Decision-Support System designed to help data scientists and ML engineers evaluate, analyze, monitor, and improve machine learning models. The system automatically detects model fit status (Good Fit, Overfitting, or Underfitting), provides detailed statistical analysis, generates professional PDF reports, and offers actionable recommendations for model improvement.
 
 ---
 
-## 🔄 How It Works: Complete Workflow
+## 📋 Table of Contents
 
-```
-USER UPLOADS CSV DATASET
-          ↓
-    DATA CLEANING
-    ├─ Fill missing values
-    ├─ Encode categorical
-    ├─ Detect outliers
-    └─ Normalize features
-          ↓
-   TRAIN TEST SPLIT (80/20)
-          ↓
-   TRAIN 4 MODELS IN PARALLEL
-   ├─ Logistic Regression / Linear Regression
-   ├─ Random Forest (100 trees)
-   ├─ Gradient Boosting (100 estimators)
-   └─ Neural Network (adaptive layers)
-          ↓
-   EVALUATE EACH MODEL
-   ├─ Calculate training score
-   ├─ Calculate validation score
-   ├─ K-fold cross-validation
-   ├─ Confidence intervals (95%)
-   └─ Learning curves
-          ↓
-   AUTOMATICALLY DETECT FIT STATUS
-   ├─ train ≥ 0.80, val ≥ 0.75, gap ≤ 0.08 → ✅ GOOD FIT (generalize well)
-   ├─ train >> val (gap > 0.15) → ⚠️ OVERFITTING (memorized data)
-   └─ both low (val < 0.60) → ❌ UNDERFITTING (too simple)
-          ↓
-   GENERATE INTERACTIVE DASHBOARD
-   ├─ Model comparison charts
-   ├─ Fit status cards with visual indicators
-   ├─ Learning curves visualization
-   ├─ 6+ actionable improvement suggestions
-   └─ Optional: Data drift simulation
-          ↓
-   DISPLAY RESULTS IN REACT UI
-```
+- [Overview](#overview)
+- [Key Features](#key-features)
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Installation & Setup](#installation--setup)
+- [How It Works](#how-it-works)
+- [API Endpoints](#api-endpoints)
+- [Usage Guide](#usage-guide)
+- [Architecture](#architecture)
+- [Development](#development)
+- [Contributing](#contributing)
 
 ---
 
-## 🌟 Key Features
+## 📖 Overview
 
-### 1️⃣ Automatic Fit Status Detection ✨
-No manual threshold tuning. The system **automatically classifies** your model:
+### What is ML Fit Monitor?
 
-| Status | What It Means | Example | What To Do |
-|--------|--------------|---------|-----------|
-| ✅ **Good Fit** | Model generalizes well | Train 82%, Val 80%, Gap 2% | Deploy with monitoring |
-| ⚠️ **Overfitting** | Memorized training data | Train 95%, Val 60%, Gap 35% | Add regularization, get more data |
-| ❌ **Underfitting** | Model too simple | Train 55%, Val 50%, Gap 5% | Increase complexity, engineer features |
+ML Fit Monitor is a comprehensive solution for machine learning model evaluation and monitoring. It provides:
 
-### 2️⃣ Advanced Analytics
-- **Learning Curves** - See how scores improve with more training data
-- **Cross-Validation** - 95% confidence intervals from k-fold CV
-- **Bias-Variance Analysis** - Understand the bias-variance tradeoff
-- **Generalization Score** - Smart model ranking
+- **Automatic Model Fit Detection**: Identifies overfitting, underfitting, and good fit scenarios
+- **Multi-Model Comparison**: Train and compare multiple algorithms simultaneously
+- **Data Quality Analysis**: Profile datasets and identify quality issues
+- **Feature Importance**: Understand which features matter most for predictions
+- **Hyperparameter Optimization**: Automatically tune model parameters for better performance
+- **Experiment Tracking**: Save and compare experiments over time
+- **Model Drift Detection**: Monitor how model performance changes with data drift
+- **Professional Reports**: Generate detailed PDF reports with charts and recommendations
+- **Interactive Dashboard**: Visualize all analysis results in real-time
 
-### 3️⃣ Actionable Recommendations
-Smart suggestions tailored to **your specific problem**:
+### Who Should Use It?
 
-**If Overfitting:** 
-1. [HIGH] Increase regularization (L1/L2)
-2. [HIGH] Remove non-informative features
-3. [MEDIUM] Collect more training data
-
-**If Underfitting:**
-1. [HIGH] Increase model complexity
-2. [HIGH] Engineer more features
-3. [MEDIUM] Improve data quality
-
-### 4️⃣ Data Drift Simulation
-**Realistic production scenario testing:**
-- Simulate 5%, 10%, 15%, 20%, 30%, 50% data distribution shifts
-- Watch performance degrade in real-time
-- Get automatic retraining trigger recommendations
-- Know when model monitoring is critical
-
-### 5️⃣ Four Analysis Modes
-Choose what you need:
-
-| Mode | Use Case | Time | Output |
-|------|----------|------|--------|
-| 📊 **Train** | Quick model check | 5-8 sec | Fit status + scores |
-| 🔬 **Analyze** | Complete assessment | 10-20 sec | Everything (full report) |
-| 💡 **Suggest** | Improvement focus | 5-10 sec | Prioritized recommendations |
-| 📈 **Drift** | Production risk | 4-6 sec | Degradation curves + triggers |
+- **Data Scientists**: Quickly validate model quality and detect fitting issues
+- **ML Engineers**: Monitor model performance in production
+- **Data Analysts**: Understand data quality and feature importance
+- **Researchers**: Track and compare experiments systematically
+- **Business Stakeholders**: Get actionable insights through professional reports
 
 ---
 
-## 🛠️ System Architecture
+## 🎯 Key Features
 
-### Two-Tier Architecture
+### 1. **Model Fit Detection**
+Automatically analyzes training vs validation performance to classify models as:
+- **Good Fit**: Balanced performance, optimal generalization
+- **Overfitting**: High training accuracy, lower validation accuracy (model memorizes data)
+- **Underfitting**: Poor performance on both sets (model too simple)
 
-```
-FRONTEND (React + TypeScript)          BACKEND (FastAPI + Python)
-─────────────────────────────          ──────────────────────────
+Uses statistical confidence intervals for accurate classification.
 
-┌─────────────────────────┐             ┌──────────────────────┐
-│   Upload Panel          │             │  FastAPI Routes      │
-│  - File upload          │────────────▶│  /train              │
-│  - Mode selection (4)   │             │  /analyze            │
-│  - Sample generation    │◀────────────│  /suggest            │
-└─────────────────────────┘             │  /drift-simulate     │
-         ▼                              │  /generate-dataset   │
-┌─────────────────────────┐             └──────────────────────┘
-│  Model Comparison Cpt   │                     ▼
-│  (Bar Chart)            │             ┌──────────────────────┐
-└─────────────────────────┘             │   ML Pipeline        │
-         ▼                              │  1. Clean data       │
-┌─────────────────────────┐             │  2. Train 4 models   │
-│  FitStatusCard Cpt      │             │  3. Evaluate scores  │
-│  (Status Badge + Score) │             │  4. Detect fit       │
-└─────────────────────────┘             └──────────────────────┘
-         ▼                                     ▼
-┌─────────────────────────┐             ┌──────────────────────┐
-│  LearningCurves Cpt     │             │  Fit Detector        │
-│  (Analytics Detail)     │             │  (Programmatic rules)│
-└─────────────────────────┘             │  - Good Fit          │
-         ▼                              │  - Overfitting       │
-┌─────────────────────────┐             │  - Underfitting      │
-│  SuggestionsPanel Cpt   │             └──────────────────────┘
-│  (Improvement list)     │                     ▼
-└─────────────────────────┘             ┌──────────────────────┐
-         ▼                              │  Drift Simulator     │
-┌─────────────────────────┐             │  (Severity analysis) │
-│  DriftSimulation Cpt    │             └──────────────────────┘
-│  (Drift curve + alert)  │
-└─────────────────────────┘
-```
+### 2. **Multi-Model Comparison**
+Train and compare multiple algorithms simultaneously:
+- Logistic Regression & Linear Regression
+- Ridge Regression
+- Random Forest (Classification & Regression)
+- Gradient Boosting (Classification & Regression)
+- Neural Networks (MLP Classifier & Regressor)
+- View detailed metrics for each model side-by-side
 
----
+### 3. **Data Profiling & Quality Analysis**
+- Automatic dataset profiling and statistics
+- Data quality checks and improvement recommendations
+- Outlier detection using Interquartile Range (IQR)
+- Missing value analysis
+- Feature distribution analysis
+- Data type detection and validation
 
-## 🚀 Quick Start (5 Minutes)
+### 4. **Feature Importance Analysis**
+- Identify which features contribute most to predictions
+- SelectKBest algorithm for feature ranking
+- Feature selection recommendations
+- Visual importance rankings and charts
+- Actionable insights for feature engineering
 
-### Prerequisites
-- Python 3.9+
-- Node.js 18+
+### 5. **Hyperparameter Tuning**
+- Automated hyperparameter optimization
+- Grid search for optimal parameter combinations
+- Before/after performance comparison
+- Tuning history and trend tracking
+- Model improvement suggestions
 
-### Step 1: Start Backend
-```bash
-cd backend
-python -m venv venv
-.\venv\Scripts\Activate  # Windows or: source venv/bin/activate
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
-```
-✓ Backend running at: **http://localhost:8000**
+### 6. **Experiment History & Tracking**
+- Save all experiments with metadata
+- Compare multiple experiments side-by-side
+- Track experiment trends over time
+- Retrieve detailed results from past runs
+- Experiment versioning and management
 
-### Step 2: Start Frontend (New Terminal)
-```bash
-cd frontend
-npm install
-npm run dev
-```
-✓ Frontend running at: **http://localhost:5174**
+### 7. **Model Drift Detection**
+- Simulate and detect data drift
+- Analyze drift impact on model performance
+- Generate drift analysis reports
+- Monitor model stability over time
+- Early warning for performance degradation
 
-### Step 3: Use It!
-1. Open http://localhost:5174
-2. Click "Upload CSV" or "Generate Dataset"
-3. See results instantly!
+### 8. **Classification & Regression Analysis**
+- **Classification**: ROC Curves, AUC, Confusion Matrices, Precision/Recall/F1-Score
+- **Regression**: MSE, RMSE, MAE, R² Score, MAPE
+- Learning curves to visualize fitting trends
+- Optimal threshold finding for binary classification
+- Comprehensive metric calculations
 
----
+### 9. **Threshold Calibration**
+- Adaptive threshold calibration for classification
+- Optimize decision boundaries for business requirements
+- Generate adaptive fit detectors
+- Improve class balance and prediction metrics
 
-## 📊 Understanding Results
+### 10. **PDF Report Generation**
+Generate professional PDF reports including:
+- Executive Summary with key findings
+- Model Performance metrics and comparisons
+- Feature Importance charts
+- Confusion matrices (classification)
+- Learning curves
+- Data profiling insights
+- Actionable recommendations for improvement
 
-### Example: Your Overfitting Model
-
-```
-MODEL: Neural Network
-STATUS: ⚠️ OVERFITTING
-
-Train Score: 95%    │████████████████████│ (Very High)
-Val Score:   60%    │████████│ (Low)
-Gap:         35%    │████████████████████████│ (High gap = Problem!)
-
-95% Confidence: [58%, 62%]
-
-DIAGNOSIS:
-  Bias:     0.5% (Good - model is learning)
-  Variance: 8.2% (BAD - high variance = overfitting)
-  
-NEXT STEPS:
-  1. [HIGH] Add L1/L2 regularization
-  2. [HIGH] Remove redundant features
-  3. [MEDIUM] Collect more data
-```
-
-### What Each Metric Means
-
-| Metric | Interpretation |
-|--------|----------------|
-| **Train Score** | How well model performs on training data |
-| **Val Score** | How well model performs on unseen data |
-| **Gap** | Difference between train & val (should be small) |
-| **Confidence Interval** | 95% CI - where true score probably lies |
-| **Bias** | Distance from perfect score (how wrong on average) |
-| **Variance** | Sensitivity to different training data |
+### 11. **Interactive Dashboard**
+- Real-time visualization with Recharts
+- Responsive design for all devices
+- Data upload panel for easy integration
+- Comprehensive suggestion panel
+- Feature importance visualization
+- Model comparison charts
+- Experiment history tracking
 
 ---
 
-## 🧪 Test It Out
+## 💻 Tech Stack
 
-### Option A: Upload a CSV
-Format requirements:
-```csv
-feature1,feature2,feature3,target
-1.5,2.3,3.1,0
-2.1,2.8,3.5,1
-3.2,3.5,4.1,0
-```
-Minimum 4 rows, last column is target
+### **Frontend**
+| Technology | Version | Purpose |
+|---|---|---|
+| React | 19.2.0 | UI Framework |
+| TypeScript | 5.9.3 | Type-safe JavaScript |
+| Vite | 8.0.0-beta | Build tool & dev server |
+| Tailwind CSS | 3.4.4 | Styling & UI components |
+| Recharts | 3.7.0 | Interactive charts & visualization |
+| Zustand | 5.0.11 | State management |
+| Axios | 1.13.5 | HTTP requests |
+| JSPDF & html2canvas | Latest | Client-side PDF export |
 
-### Option B: Generate Samples
-Frontend buttons generate:
-- ✅ **Good Fit** - Balanced train/val (~80% both)
-- ⚠️ **Overfitting** - Train 100%, Val 60%
-- ❌ **Underfitting** - Train 60%, Val 40%
+### **Backend**
+| Technology | Purpose |
+|---|---|
+| FastAPI | REST API framework |
+| Uvicorn | ASGI server |
+| scikit-learn | Machine Learning algorithms |
+| pandas | Data manipulation & analysis |
+| NumPy | Numerical computations |
+| SciPy | Statistical analysis |
+| Matplotlib | Data visualization (charts) |
+| ReportLab | PDF generation |
+| Pillow | Image processing |
+| Jinja2 | Template rendering |
 
-### Option C: Use Test Files
-Included:
-- `good_fit_dataset.csv`
-- `test_complex_dataset.csv`
-- `underfitting_dataset_new.csv`
-
----
-
-## 🔧 API Endpoints
-
-All endpoints accept CSV file uploads
-
-```bash
-# Basic training & fit detection
-POST /train → 5-8 sec response
-Response: Model metrics, fit status, learning curves
-
-# Comprehensive analysis
-POST /analyze → 10-20 sec response
-Response: Executive summary, suggestions, drift analysis
-
-# Improvement recommendations
-POST /suggest → 5-10 sec response
-Response: Prioritized suggestions per model
-
-# Production risk assessment
-POST /drift-simulate → 4-6 sec response
-Response: Degradation curves, trigger levels
-
-# Generate sample datasets
-GET /generate-dataset/{fit_type}
-Types: good_fit, overfitting, underfitting
-Response: CSV data ready for training
-```
-
----
-
-## 🎨 Tech Stack
-
-| Layer | Technology |
-|-------|-----------|
-| **Frontend UI** | React 19.2, TypeScript, Vite 8 |
-| **Styling** | Tailwind CSS + Custom CSS Design System |
-| **Charts** | Recharts 3.7 (interactive) |
-| **State** | Zustand 5.0 (lightweight) |
-| **HTTP Client** | Axios |
-| **Backend API** | FastAPI (async) |
-| **ML Models** | scikit-learn (4 algorithms) |
-| **Data Processing** | pandas, numpy |
-| **Statistics** | scipy |
-| **Server** | Uvicorn (ASGI) |
+### **Architecture**
+- **Frontend**: Single Page Application (SPA) with React
+- **Backend**: RESTful API with FastAPI
+- **Communication**: JSON over HTTP/CORS
+- **Database**: File-based experiment storage
+- **Deployment**: Docker-ready with included Dockerfile
 
 ---
 
@@ -294,195 +176,624 @@ Response: CSV data ready for training
 
 ```
 ml-fit-monitor/
-├── backend/app/
-│   ├── main.py                # 5 API endpoints
-│   ├── ml_pipeline.py         # Model training logic
-│   ├── fit_detector.py        # Automatic fit detection
-│   ├── drift.py               # Data drift simulation
-│   └── utils.py               # Helper functions
+├── frontend/                          # React TypeScript Frontend
+│   ├── src/
+│   │   ├── api/
+│   │   │   └── mlApi.ts             # API client (Axios)
+│   │   ├── components/               # React components
+│   │   │   ├── DashboardLayout.tsx
+│   │   │   ├── UploadPanel.tsx
+│   │   │   ├── DataProfilingDashboard.tsx
+│   │   │   ├── ModelComparison.tsx
+│   │   │   ├── FeatureImportance.tsx
+│   │   │   ├── HyperparameterTuningResults.tsx
+│   │   │   ├── DriftSimulation.tsx
+│   │   │   ├── ExperimentHistory.tsx
+│   │   │   ├── ReportExporter.tsx
+│   │   │   └── ... more components
+│   │   ├── store/
+│   │   │   └── useMLStore.ts         # Zustand state management
+│   │   ├── types/
+│   │   │   └── mlTypes.ts            # TypeScript type definitions
+│   │   ├── utils/
+│   │   │   └── chartExtractor.ts     # Chart utility functions
+│   │   ├── App.tsx                    # Main component
+│   │   ├── main.tsx                   # Entry point
+│   │   └── index.css                  # Global styles
+│   ├── package.json                   # Dependencies
+│   ├── tsconfig.json                  # TypeScript config
+│   ├── vite.config.ts                 # Vite config
+│   └── tailwind.config.js             # Tailwind CSS config
 │
-├── frontend/src/
-│   ├── components/            # 7 React components
-│   │   ├── UploadPanel.tsx     # File upload + mode selector
-│   │   ├── ModelComparison.tsx # Bar chart
-│   │   ├── FitStatusCard.tsx   # Status + scores
-│   │   ├── LearningCurves.tsx  # Analytics detail
-│   │   ├── SuggestionsPanel.tsx# Recommendations
-│   │   ├── DriftSimulation.tsx # Drift analysis
-│   │   └── DashboardLayout.tsx # Smart routing
-│   ├── api/mlApi.ts           # API client
-│   ├── store/useMLStore.ts    # State management
-│   └── types/mlTypes.ts       # TypeScript definitions
+├── backend/                           # Python FastAPI Backend
+│   ├── app/
+│   │   ├── main.py                   # FastAPI application & routes
+│   │   ├── ml_pipeline.py            # ML model training pipeline
+│   │   ├── fit_detector.py           # Model fit detection logic
+│   │   ├── feature_importance.py     # Feature analysis
+│   │   ├── hyperparameter_tuning.py  # Hyperparameter optimization
+│   │   ├── model_evaluation.py       # Performance metrics
+│   │   ├── data_profiling.py         # Data quality analysis
+│   │   ├── drift.py                  # Model drift detection
+│   │   ├── experiment_history.py     # Experiment tracking
+│   │   ├── threshold_calibration.py  # Threshold optimization
+│   │   ├── ensemble_models.py        # Ensemble techniques
+│   │   ├── pdf_generator_new.py      # PDF report generation
+│   │   ├── pdf_report_generator.py   # Alternative PDF engine
+│   │   ├── schemas.py                # Request/response schemas
+│   │   ├── utils.py                  # Utility functions
+│   │   └── __init__.py
+│   ├── requirements.txt               # Python dependencies
+│   ├── Dockerfile                     # Docker configuration
+│   └── .env (optional)                # Environment variables
 │
-└── test_*.csv                # Test datasets
-└── test_*.py                 # Test scripts
+├── test files/                        # Test and validation scripts
+│   ├── test_api.py
+│   ├── test_comprehensive.py
+│   ├── test_backend.py
+│   └── ... more test files
+│
+├── README.md                          # This file
+├── PROJECT.md                         # Project overview
+└── SETUP_COMPLETE.md                  # Setup status
 ```
 
 ---
 
-## 🚀 Real-World Example Workflow
+## 🚀 Installation & Setup
 
-### Scenario: You built a model with 95% accuracy
+### Prerequisites
+- **Python 3.9+** (for backend)
+- **Node.js 16+** & **npm 8+** (for frontend)
+- **pip** (Python package manager)
+- **Git** (optional, for version control)
 
-**Step 1: Upload to ML Fit Monitor**
-```
-Result: Train 95%, Val 60% → ⚠️ OVERFITTING DETECTED
-```
-
-**Step 2: See the Problem**
-```
-Gap: 35% (way too high!)
-Diagnosis: Model memorized training data
-Severity: HIGH - won't perform in production
-```
-
-**Step 3: Get Recommendations**
-```
-[HIGH] Add L1/L2 regularization
-[HIGH] Remove low-importance features  
-[MEDIUM] Collect more training data
-[MEDIUM] Use ensemble methods
-[LOW] Cross-validation hyperparameter tuning
-```
-
-**Step 4: Simulate Production Risk**
-```
-With 10% data drift:
-├─ Current: 60% score
-├─ After drift: 35% score (-25%)
-├─ Severity: 🔴 CRITICAL
-└─ Action: Retrain immediately
-```
-
-**Step 5: Improve & Retry**
-```
-Make changes → Re-upload → Check fit status → Verify improvement
-```
-
----
-
-## ⚠️ Drift Trigger Levels
-
-As data distribution changes:
-
-| Drop % | Level | Action | Monitoring |
-|--------|-------|--------|-----------|
-| < 5% | 🟢 Stable | Continue normal ops | Daily |
-| 5-10% | 🟡 Warning | Monitor closely | Every 4 hours |
-| 10-15% | 🟠 Alert | Prepare retraining | Every 30 min |
-| 15-25% | 🔴 Critical | Retrain immediately | Continuous |
-| > 25% | 🔴 Failsafe | Switch to backup model | Real-time |
-
----
-
-## 🎓 Learning Resources
-
-**New to ML diagnostics?** Start here:
-
-1. **Upload** `good_fit_dataset.csv` → Understand what good looks like
-2. **Upload** `underfitting_dataset_new.csv` → See why complexity matters  
-3. **Upload** `test_complex_dataset.csv` → Observe overfitting signal
-4. **Try** each analysis mode to understand their value
-5. **Experiment** with the improvement suggestions
-
----
-
-## 📝 API Endpoints Reference
+### 1. Clone/Navigate to Project
 
 ```bash
-# Health check
-GET http://localhost:8000/ → {"message": "..."}
-
-# Interactive API docs
-GET http://localhost:8000/docs → Swagger UI
-
-# Upload and train models
-POST http://localhost:8000/train
-  Input: CSV file
-  Output: {models: [...], task_type: "classification|regression"}
-
-# Full analysis with everything
-POST http://localhost:8000/analyze
-  Input: CSV file
-  Output: {executive_summary, model_analysis, suggestions, drift_analysis}
-
-# Get improvement suggestions
-POST http://localhost:8000/suggest
-  Input: CSV file
-  Output: {model_suggestions: [...], general_recommendations}
-
-# Simulate data drift
-POST http://localhost:8000/drift-simulate
-  Input: CSV file
-  Output: {models: [...], severity_tested: [0.05, 0.10, ...]}
-
-# Generate sample dataset
-GET http://localhost:8000/generate-dataset/good_fit
-  Output: {csv: "...", filename, rows, columns}
-  Types: good_fit, overfitting, underfitting
+cd ml-fit-monitor
 ```
 
----
+### 2. Setup Backend
 
-## 🐛 Troubleshooting
-
-### CORS Error When Uploading?
-**Problem:** "Access-Control-Allow-Origin blocked"
-
-**Solution:** Update backend CORS in `backend/app/main.py`:
-```python
-allow_origins=[
-    "http://localhost:5173",
-    "http://localhost:5174",  # Add any port you're using
-    "http://localhost:3000"
-]
-```
-Then restart backend: `uvicorn app.main:app --reload`
-
-### Import Errors?
 ```bash
-# Ensure venv is active
-.\venv\Scripts\Activate  # Windows
+# Navigate to backend directory
+cd backend
 
-# Reinstall dependencies
-pip install -r requirements.txt --upgrade
+# Create virtual environment (if not already created)
+python -m venv venv
+
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install Python dependencies
+pip install -r requirements.txt
+
+# Start FastAPI server
+uvicorn app.main:app --reload --port 8000
 ```
 
-### Port Already in Use?
+**Backend will run at**: `http://localhost:8000`
+
+### 3. Setup Frontend
+
 ```bash
-# Use different port
-uvicorn app.main:app --port 8001
-npm run dev -- --port 5175
+# In a new terminal, navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
+```
+
+**Frontend will run at**: `http://localhost:5173` (or similar)
+
+### 4. Verify Setup
+
+- Frontend: Open `http://localhost:5173` in your browser
+- Backend API Docs: Open `http://localhost:8000/docs` (Swagger UI)
+- Backend ReDoc: Open `http://localhost:8000/redoc` (ReDoc UI)
+
+---
+
+## 🔧 How It Works
+
+### Complete Workflow
+
+```
+1. USER UPLOADS DATA
+   ↓
+2. DATA PREPROCESSING
+   - Clean data
+   - Handle missing values
+   - Detect outliers
+   - Type validation
+   ↓
+3. PROBLEM TYPE DETECTION
+   - Classification or Regression?
+   - Binary or Multi-class?
+   ↓
+4. DATA PROFILING
+   - Statistical summary
+   - Distribution analysis
+   - Quality assessment
+   ↓
+5. TRAIN MULTIPLE MODELS
+   - Split data (train/val)
+   - Train 8 different algorithms
+   - Calculate metrics for each
+   ↓
+6. FIT DETECTION
+   - Analyze train vs validation gap
+   - Classify: Good Fit / Overfitting / Underfitting
+   - Generate confidence intervals
+   ↓
+7. FEATURE ANALYSIS
+   - Calculate feature importance
+   - Rank features by impact
+   - Generate recommendations
+   ↓
+8. OPTIONAL: HYPERPARAMETER TUNING
+   - Grid search best parameters
+   - Retrain with optimized parameters
+   - Compare improvements
+   ↓
+9. REPORT GENERATION
+   - Generate comprehensive PDF
+   - Include charts and metrics
+   - Add recommendations
+   ↓
+10. DASHBOARD VISUALIZATION
+    - Display all results
+    - Interactive charts
+    - Comparison views
+```
+
+### Key Algorithms & Techniques
+
+#### Model Fit Detection
+```
+Good Fit: validation_score ≈ training_score (gap < 0.1)
+Overfitting: validation_score << training_score (gap > 0.15)
+Underfitting: Both scores low (< 0.6)
+```
+
+#### Feature Importance
+- **Classification**: f_classif (ANOVA F-statistic)
+- **Regression**: f_regression (Pearson correlation coefficient)
+- Uses SelectKBest for ranking
+
+#### Data Quality Assessment
+- Outlier detection: IQR method (Q1 - 1.5×IQR, Q3 + 1.5×IQR)
+- Missing values: Percentage and recommendation
+- Type inference: Auto-detect categorical vs numerical
+
+#### Drift Detection
+- Simulate dataset drift by modifying feature values
+- Track model performance degradation
+- Compare original vs drifted predictions
+
+---
+
+## 🔌 API Endpoints
+
+### Core ML Endpoints
+
+#### 1. **Pipeline Execution**
+```
+POST /api/pipeline
+```
+Main endpoint for training models on your data.
+
+**Request**:
+```json
+{
+  "data": "CSV or Excel file content",
+  "target_column": "column_name",
+  "test_size": 0.2,
+  "random_state": 42
+}
+```
+
+**Response**:
+```json
+{
+  "summary": {
+    "best_model": "RandomForestClassifier",
+    "overall_fit_status": "Good Fit",
+    "dataset_size": 1000,
+    "val_score": 0.92,
+    "gap": 0.03
+  },
+  "models": [
+    {
+      "model": "LogisticRegression",
+      "train_score": 0.91,
+      "val_score": 0.89,
+      "gap": 0.02,
+      "fit_status": "Good Fit",
+      "metrics": {...}
+    },
+    {...}
+  ],
+  "feature_importance": [
+    {"name": "age", "importance": 0.35},
+    {"name": "income", "importance": 0.28}
+  ]
+}
+```
+
+#### 2. **Data Profiling**
+```
+POST /api/profile
+```
+Analyze data quality and statistics.
+
+#### 3. **Feature Importance**
+```
+POST /api/feature-importance
+```
+Calculate and rank feature importance.
+
+#### 4. **Hyperparameter Tuning**
+```
+POST /api/hyperparameter-tuning
+```
+Optimize model parameters.
+
+#### 5. **Model Drift Simulation**
+```
+POST /api/drift-simulation
+```
+Simulate data drift and analyze impact.
+
+#### 6. **Experiment Management**
+- `POST /api/experiments` - Save experiment
+- `GET /api/experiments` - List experiments
+- `GET /api/experiments/{id}` - Get specific experiment
+- `POST /api/experiments/compare` - Compare multiple experiments
+
+#### 7. **PDF Report Generation**
+```
+POST /api/reports/advanced-pdf
+```
+Generate professional PDF report with all analysis results.
+
+#### 8. **Threshold Calibration** (Classification)
+```
+POST /api/threshold-calibration
+```
+Optimize decision threshold for binary classification.
+
+---
+
+## 💡 Usage Guide
+
+### Step 1: Prepare Your Data
+- CSV or Excel file format (.csv, .xlsx, .xls)
+- First row should be column names
+- One column should be your target variable
+- Examples: customer_churn, house_price, disease_diagnosis
+
+### Step 2: Upload Data
+1. Open the dashboard at `http://localhost:5173`
+2. Click on "Upload Panel"
+3. Select your data file
+4. Choose target column
+5. Click "Upload & Analyze"
+
+### Step 3: View Results
+The dashboard will show:
+- **Data Profiling**: Dataset statistics and quality
+- **Model Comparison**: Performance of all trained models
+- **Model Fit Status**: Classification as Good/Over/Underfitting
+- **Feature Importance**: Most important features
+- **Recommendations**: Actionable improvement suggestions
+
+### Step 4: Optional - Hyperparameter Tuning
+1. Select a model to tune
+2. Click "Tune Hyperparameters"
+3. View before/after comparison
+4. Apply tuned model
+
+### Step 5: Generate Report
+1. Click "Export as PDF"
+2. Report downloads with all analysis
+3. Share with stakeholders
+
+### Step 6: Track Experiments
+1. Save experiment (automatically saved after analysis)
+2. View all experiments in "Experiment History"
+3. Compare experiments side-by-side
+4. Track improvements over time
+
+---
+
+## 🏗️ Architecture
+
+### System Design
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│                     User Browser                             │
+│            (React + TypeScript + Tailwind CSS)               │
+│                                                              │
+│  ┌──────────────┐  ┌──────────────┐  ┌─────────────────┐  │
+│  │ UploadPanel  │  │  Dashboard   │  │ ReportExporter  │  │
+│  └──────────────┘  └──────────────┘  └─────────────────┘  │
+│                      Zustand Store                          │
+└──────────────────────────┬──────────────────────────────────┘
+                           │ Axios HTTP Requests
+                           ↓
+┌──────────────────────────────────────────────────────────────┐
+│         FastAPI Backend (Python)                             │
+│                                                              │
+│  ┌────────────────────────────────────────────────────────┐ │
+│  │              CORS Middleware                           │ │
+│  └────────────────────────────────────────────────────────┘ │
+│                                                              │
+│  ┌──────────────┐ ┌──────────────┐ ┌────────────────────┐ │
+│  │ ML Pipeline  │ │ Data         │ │ Feature            │ │
+│  │ - Training   │ │ Profiling    │ │ Importance         │ │
+│  │ - Evaluation │ │ - QA         │ │ - Selection        │ │
+│  │ - Metrics    │ │ - Analysis   │ │ - Ranking          │ │
+│  └──────────────┘ └──────────────┘ └────────────────────┘ │
+│                                                              │
+│  ┌──────────────┐ ┌──────────────┐ ┌────────────────────┐ │
+│  │ Hyperparameter│ │ Drift        │ │ PDF Generator      │ │
+│  │ Tuning       │ │ Detection    │ │ - ReportLab        │ │
+│  │ - Grid Search│ │ - Simulation │ │ - Charts           │ │
+│  │ - Comparison │ │ - Analysis   │ │ - Formatting       │ │
+│  └──────────────┘ └──────────────┘ └────────────────────┘ │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │         scikit-learn ML Models                        │  │
+│  │  - Logistic/Linear Regression  - Random Forest        │  │
+│  │  - Ridge Regression            - Gradient Boosting   │  │
+│  │  - Neural Networks (MLP)       - Ensemble Methods    │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │         Data Processing Layer                         │  │
+│  │  - pandas: Data manipulation & cleaning              │  │
+│  │  - NumPy: Numerical computations                     │  │
+│  │  - SciPy: Statistical analysis                       │  │
+│  │  - sklearn preprocessing: Scaling, encoding          │  │
+│  └──────────────────────────────────────────────────────┘  │
+│                                                              │
+│  ┌──────────────────────────────────────────────────────┐  │
+│  │         Storage Layer                                │  │
+│  │  - Experiment history (JSON files)                   │  │
+│  │  - Generated reports (PDF files)                     │  │
+│  └──────────────────────────────────────────────────────┘  │
+└──────────────────────────────────────────────────────────────┘
+```
+
+### Data Flow
+
+```
+1. FILE UPLOAD
+   User File (CSV/Excel) → Browser → FormData → API
+
+2. PREPROCESSING
+   Raw Data → Clean → Type Detection → Train/Test Split
+
+3. PARALLEL PROCESSING (8 Models)
+   ├─ LogisticRegression/LinearRegression
+   ├─ Ridge Regression
+   ├─ RandomForest (Classifier/Regressor)
+   ├─ GradientBoosting (Classifier/Regressor)
+   └─ Neural Network (MLP)
+   
+4. ANALYSIS
+   Models → Metrics → Feature Importance → Fit Detection
+   
+5. RESPONSE
+   Results JSON → Browser → Zustand Store → Visualization
+
+6. REPORT GENERATION
+   Stored Data → PDF Engine → Downloadable PDF
+```
+
+### State Management (Zustand)
+
+The frontend uses Zustand for state management with the following store:
+
+```typescript
+interface MLStore {
+  // Data
+  uploadedFile: File | null;
+  analysisResults: AnalysisResults | null;
+  dataProfile: DataProfile | null;
+  
+  // UI State
+  isLoading: boolean;
+  error: string | null;
+  selectedModel: string;
+  
+  // Actions
+  setUploadedFile: (file: File) => void;
+  setAnalysisResults: (results: AnalysisResults) => void;
+  // ... more actions
+}
 ```
 
 ---
 
-## ✨ All Features Implemented
+## 🔄 Development
 
-✅ Upload any CSV dataset
-✅ Automatic problem type detection
-✅ Train 4 different model types
-✅ Programmatic fit status detection
-✅ Learning curve generation
-✅ Confidence interval calculation
-✅ Bias-variance analysis
-✅ Actionable improvement suggestions
-✅ Data drift simulation (6 severity levels)
-✅ Retraining trigger recommendations
-✅ 4 analysis modes
-✅ Interactive dark-themed UI
-✅ Responsive design (mobile-friendly)
-✅ Sample dataset generation
+### Project Setup for Development
+
+```bash
+# Install all dependencies
+cd backend && pip install -r requirements.txt
+cd ../frontend && npm install
+
+# Start development servers
+# Terminal 1:
+cd backend && uvicorn app.main:app --reload --port 8000
+
+# Terminal 2:
+cd frontend && npm run dev
+```
+
+### Key Files to Understand
+
+| File | Purpose |
+|------|---------|
+| `backend/app/main.py` | REST API routes |
+| `backend/app/ml_pipeline.py` | Model training logic |
+| `backend/app/fit_detector.py` | Fit detection algorithm |
+| `frontend/src/store/useMLStore.ts` | Global state |
+| `frontend/src/api/mlApi.ts` | API client |
+| `frontend/src/components/DashboardLayout.tsx` | Main UI layout |
+
+### Building for Production
+
+**Frontend**:
+```bash
+cd frontend
+npm run build
+# Output: dist/ folder with optimized files
+```
+
+**Backend**:
+```bash
+# Use Dockerfile for containerization
+docker build -t ml-fit-monitor:latest .
+docker run -p 8000:8000 ml-fit-monitor:latest
+```
+
+### Testing
+
+```bash
+# Run backend tests
+cd backend
+python -m pytest
+
+# Run frontend linting
+cd frontend
+npm run lint
+```
 
 ---
 
-## 🎉 You're Ready!
+## 📊 Example Workflow
 
-Open **http://localhost:5174** and start analyzing models!
+### Training a Classification Model
 
-**Questions?** Check the tests:
-- `test_comprehensive.py` - See all workflows
-- `test_fit_status_verification.py` - Understand detection
-- `test_frontend_integration.py` - Verify integration
+1. **Prepare Data**: Customer churn dataset (1000 rows, 15 features)
 
-**Happy model optimization! 🚀**
+2. **Upload**: Click upload, select churn_prediction.csv, target="churned"
+
+3. **Automatic Analysis**:
+   - Data profiling: 85% data quality, 2% missing values
+   - 8 models trained simultaneously
+   - Best model: RandomForest (97% validation accuracy)
+   - Fit Status: **Good Fit** (gap = 0.02)
+
+4. **Feature Importance**:
+   - Monthly_charges (32% importance)
+   - Contract_type (28%)
+   - Internet_service (19%)
+   - Recommendations: Focus on pricing strategy
+
+5. **Hyperparameter Tuning**:
+   - Grid search optimizes parameters
+   - Improves accuracy from 97% → 98.5%
+
+6. **Report**: PDF generated with executive summary, confusion matrix, feature rankings, recommendations
+
+7. **Tracking**: Experiment saved for future comparison
+
+---
+
+## 🤝 Contributing
+
+### Adding New Features
+
+1. **New ML Model**: Add to `backend/app/ml_pipeline.py`
+2. **New Metric**: Add to `backend/app/model_evaluation.py`
+3. **New UI Component**: Add to `frontend/src/components/`
+4. **New API Endpoint**: Add to `backend/app/main.py`
+
+### Code Style
+
+- **Python**: PEP 8
+- **TypeScript**: ESLint configuration in project
+- **Formatting**: Automatic with Prettier/Black
+
+---
+
+## 📝 Common Issues & Solutions
+
+### Issue: Port Already in Use
+```bash
+# Kill process on port 8000 (Windows)
+netstat -ano | findstr :8000
+taskkill /PID <PID> /F
+
+# Or use different port
+uvicorn app.main:app --port 9000
+```
+
+### Issue: CORS Errors
+- Ensure backend is running on correct port
+- Check frontend URL in backend CORS configuration
+- Verify no proxy/firewall blocking
+
+### Issue: Out of Memory with Large Files
+- Use data sampling for initial analysis
+- Process in chunks
+- Increase RAM or optimize data types
+
+---
+
+## 📚 Documentation
+
+- **API Docs**: http://localhost:8000/docs (Swagger UI)
+- **Project Details**: See `PROJECT.md`
+- **Setup Status**: See `SETUP_COMPLETE.md`
+
+---
+
+## 📄 License
+
+This project is provided as-is for educational and research purposes.
+
+---
+
+## 🙋 Support
+
+For issues, questions, or feature requests:
+1. Check existing test files for examples
+2. Review API documentation at `/docs` endpoint
+3. Check backend logs for error details
+4. Verify all dependencies are correctly installed
+
+---
+
+## 🎯 Roadmap
+
+Future enhancements:
+- [ ] Real-time model monitoring dashboard
+- [ ] Advanced ensemble techniques
+- [ ] Time-series model support
+- [ ] Explainability with SHAP values
+- [ ] Multi-class classification improvements
+- [ ] Cloud deployment templates
+- [ ] Mobile app support
+- [ ] Advanced data visualization options
+
+---
+
+**Built with ❤️ for ML practitioners**
+
+---
+
+Last Updated: April 2026

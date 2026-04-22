@@ -4,6 +4,9 @@ import FitStatusCard from "./FitStatusCard";
 import SuggestionsPanel from "./SuggestionsPanel";
 import DriftSimulation from "./DriftSimulation";
 import ModelAnalysisDetail from "./LearningCurves";
+import FeatureImportance from "./FeatureImportance";
+import DataProfilingDashboard from "./DataProfilingDashboard";
+import ReportExporter from "./ReportExporter";
 import { useMLStore } from "../store/useMLStore";
 import { improveFitDataset } from "../api/mlApi";
 import { useState } from "react";
@@ -404,6 +407,28 @@ export default function DashboardLayout() {
           <DriftSimulation driftData={results.drift_analysis} />
         )}
 
+        {/* Advanced Analysis Features */}
+        <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(226, 232, 240, 0.1)', paddingTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            🔬 Advanced Analysis & Model Diagnostics
+          </h2>
+
+          {/* Data Quality Profiling */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <DataProfilingDashboard profile={results.data_profile} />
+          </div>
+
+          {/* Feature Importance */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <FeatureImportance features={results.feature_importance} />
+          </div>
+
+          {/* Report Exporter */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <ReportExporter hasAnalysisData={true} />
+          </div>
+        </div>
+
         {results.next_steps && (
           <div className="glass-card animate-fade-in-up" style={{ marginTop: '1.5rem' }}>
             <div className="section-title">
@@ -444,6 +469,28 @@ export default function DashboardLayout() {
 
         <UploadPanel />
         <ImprovedFitView results={results} />
+
+        {/* Advanced Analysis Features after improvement */}
+        <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(226, 232, 240, 0.1)', paddingTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            🔬 Advanced Analysis & Model Diagnostics
+          </h2>
+
+          {/* Data Quality Profiling */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <DataProfilingDashboard profile={results.data_profile} />
+          </div>
+
+          {/* Feature Importance */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <FeatureImportance features={results.feature_importance} />
+          </div>
+
+          {/* Report Exporter */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <ReportExporter hasAnalysisData={true} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -525,6 +572,28 @@ export default function DashboardLayout() {
           loading={improving}
           error={improveError}
         />
+
+        {/* Advanced Analysis Features */}
+        <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(226, 232, 240, 0.1)', paddingTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            🔬 Advanced Analysis & Model Diagnostics
+          </h2>
+
+          {/* Data Quality Profiling */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <DataProfilingDashboard profile={results.data_profile} />
+          </div>
+
+          {/* Feature Importance */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <FeatureImportance features={results.feature_importance} />
+          </div>
+
+          {/* Report Exporter */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <ReportExporter hasAnalysisData={true} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -553,6 +622,28 @@ export default function DashboardLayout() {
           improving={improving}
           improveError={improveError}
         />
+
+        {/* Advanced Analysis Features for Suggestions Mode */}
+        <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(226, 232, 240, 0.1)', paddingTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            🔬 Advanced Analysis & Model Diagnostics
+          </h2>
+
+          {/* Data Quality Profiling */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <DataProfilingDashboard profile={results.data_profile} />
+          </div>
+
+          {/* Feature Importance */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <FeatureImportance features={results.feature_importance} />
+          </div>
+
+          {/* Report Exporter */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <ReportExporter hasAnalysisData={true} />
+          </div>
+        </div>
       </div>
     );
   }
@@ -576,6 +667,28 @@ export default function DashboardLayout() {
 
         <UploadPanel />
         <DriftSimulation driftData={results} />
+
+        {/* Advanced Analysis Features for Drift Simulation */}
+        <div style={{ marginTop: '2rem', borderTop: '1px solid rgba(226, 232, 240, 0.1)', paddingTop: '2rem' }}>
+          <h2 style={{ fontSize: '1.3rem', marginBottom: '1.5rem', background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            🔬 Advanced Analysis & Model Diagnostics
+          </h2>
+
+          {/* Data Quality Profiling */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <DataProfilingDashboard profile={results.data_profile} />
+          </div>
+
+          {/* Feature Importance */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <FeatureImportance features={results.feature_importance} />
+          </div>
+
+          {/* Report Exporter */}
+          <div style={{ marginBottom: '1.5rem' }}>
+            <ReportExporter hasAnalysisData={true} />
+          </div>
+        </div>
       </div>
     );
   }
