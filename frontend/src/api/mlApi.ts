@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API = "http://localhost:9000";
+const API = "https://ml-fit-monitor-backend.onrender.com";
 
 // Add timeout to all requests - 90 seconds
 const API_TIMEOUT = 90000; // 90 seconds
