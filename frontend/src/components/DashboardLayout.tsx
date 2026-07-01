@@ -7,6 +7,7 @@ import ModelAnalysisDetail from "./LearningCurves";
 import FeatureImportance from "./FeatureImportance";
 import DataProfilingDashboard from "./DataProfilingDashboard";
 import ReportExporter from "./ReportExporter";
+import AgentPanel from "./AgentPanel";
 import { useMLStore } from "../store/useMLStore";
 import { improveFitDataset } from "../api/mlApi";
 import { useState } from "react";
@@ -372,6 +373,29 @@ export default function DashboardLayout() {
         <AppHeader />
         <UploadPanel />
         <HowToGuide />
+      </div>
+    );
+  }
+
+  // ====== AGENTIC ANALYSIS ======
+  if (results.trace) {
+    return (
+      <div className="app-container">
+        <AppHeader />
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.5rem' }}>
+          <h1 style={{ fontSize: '1.5rem' }}>
+            <span style={{ background: 'var(--gradient-accent)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Agentic Analysis Report
+            </span>
+          </h1>
+          <button className="reset-btn" onClick={handleReset}>
+            ← New Analysis
+          </button>
+        </div>
+
+        <UploadPanel />
+        <AgentPanel agentResult={results} />
       </div>
     );
   }

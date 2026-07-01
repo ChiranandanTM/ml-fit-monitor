@@ -125,3 +125,23 @@ export const improveFitDataset = async (file: File, strategy: "best_model" | "ge
   }
 };
 
+export const runAgentApi = async (file: File) => {
+  try {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const res = await axios.post(`${API}/api/agent/run`, formData, {
+      headers: {
+        "Content-Type": "multipart/form-data"
+      },
+      timeout: API_TIMEOUT
+    });
+    
+    return res.data;
+  } catch (error: any) {
+    console.error("Agent API error:", error.response?.data || error.message);
+    throw error;
+  }
+};
+
+

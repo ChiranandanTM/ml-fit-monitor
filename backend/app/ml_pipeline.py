@@ -305,7 +305,7 @@ def clean_dataframe(df):
     return df
 
 
-def run_pipeline(df):
+def run_pipeline(df, return_artifacts=False):
     """Enhanced pipeline with comprehensive ML analysis"""
     print("\n" + "="*70)
     print("🚀 ML QUALITY DECISION-SUPPORT SYSTEM - PIPELINE STARTING")
@@ -641,7 +641,7 @@ def run_pipeline(df):
         print("✓ PIPELINE COMPLETE")
         print(f"{'='*70}\n")
         
-        return sanitize_for_json({
+        response = sanitize_for_json({
             "task_type": problem_type,
             "models": results,
             "summary": {
@@ -652,6 +652,16 @@ def run_pipeline(df):
                 "unique_targets": int(len(np.unique(y)))
             }
         })
+        
+        if return_artifacts:
+            return response, {
+                "models": models,
+                "X_train": X_train_clean if 'X_train_clean' in locals() else X_train,
+                "X_val": X_val,
+                "y_train": y_train,
+                "y_val": y_val
+            }
+        return response
     except Exception as e:
         print(f"\n✗ PIPELINE FAILED: {type(e).__name__}")
         print(f"  Message: {str(e)}")

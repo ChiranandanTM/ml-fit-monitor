@@ -12,3 +12,5 @@ matplotlib
 weasyprint
 Pillow
 jinja2
+google-generativeai
+python-dotenv

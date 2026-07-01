@@ -28,6 +28,7 @@ from .threshold_calibration import ThresholdCalibrator, create_adaptive_fit_dete
 from .feature_importance import calculate_feature_importance, get_feature_recommendations
 from .model_evaluation import calculate_classification_metrics, find_optimal_threshold, generate_classification_summary
 from .data_profiling import profile_dataset, get_data_quality_recommendations, generate_data_quality_summary
+from .agent import FitMonitorAgent
 from .pdf_report_generator import ReportGenerator
 from .pdf_generator_canvas import PDFReportGenerator
 from .pdf_generator_advanced import AdvancedPDFReportGenerator
@@ -357,6 +358,25 @@ async def train_model(file: UploadFile = File(...)):
         traceback.print_exc()
         error_msg = f"Server error: {str(e)}"
         return {"error": error_msg}
+
+
+@app.post("/api/agent/run")
+async def run_agent(file: UploadFile = File(...)):
+    """
+    Run the FitMonitorAgent on the uploaded dataset.
+    """
+    try:
+        content = await file.read()
+        df = read_uploaded_dataframe(file, content)
+        
+        agent = FitMonitorAgent()
+        results = agent.run(df)
+        
+        return sanitize_for_json(results)
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
 
 
 @app.get("/generate-dataset/{fit_type}")

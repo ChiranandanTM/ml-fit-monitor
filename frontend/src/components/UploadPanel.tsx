@@ -1,14 +1,15 @@
-import { uploadDataset, generateDataset, getComprehensiveAnalysis, getSuggestions, getDriftSimulation } from "../api/mlApi";
+import { uploadDataset, generateDataset, getComprehensiveAnalysis, getSuggestions, getDriftSimulation, runAgentApi } from "../api/mlApi";
 import { useMLStore } from "../store/useMLStore";
 import { useState, useRef } from "react";
 
-type AnalysisMode = "train" | "analyze" | "suggest" | "drift";
+type AnalysisMode = "train" | "analyze" | "suggest" | "drift" | "agent";
 
 const MODES: { key: AnalysisMode; icon: string; label: string; desc: string }[] = [
   { key: "train", icon: "📊", label: "Basic Training", desc: "Train models & detect fit" },
   { key: "analyze", icon: "🔬", label: "Full Analysis", desc: "Comprehensive report" },
   { key: "suggest", icon: "💡", label: "Suggestions", desc: "Actionable improvements" },
   { key: "drift", icon: "📈", label: "Drift Simulation", desc: "Data drift analysis" },
+  { key: "agent", icon: "🤖", label: "Agentic Analysis", desc: "AI-driven optimization loop" },
 ];
 
 export default function UploadPanel() {
@@ -35,6 +36,8 @@ export default function UploadPanel() {
         data = await getSuggestions(file);
       } else if (analysisMode === "drift") {
         data = await getDriftSimulation(file);
+      } else if (analysisMode === "agent") {
+        data = await runAgentApi(file);
       }
 
       if (data && !data.error) {
